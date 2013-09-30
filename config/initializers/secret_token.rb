@@ -9,4 +9,19 @@
 
 # Make sure your secret_key_base is kept private
 # if you're sharing your code publicly.
-PinchLineup::Application.config.secret_key_base = '57561a71a3b09376f3b024323319fd2b74ebeeb89212a9844e302e1a03f496340328ad20aef3cc31a1290eb276362600c141ddd9e5afdae47acccff00ea9baa9'
+require 'securerandom'
+
+def secure_token
+  token_file = Rails.root.join('.secret')
+  if File.exist?(token_file)
+    # Use the existing token.
+    File.read(token_file).chomp
+  else
+    # Generate a new token and store it in token_file.
+    token = SecureRandom.hex(64)
+    File.write(token_file, token)
+    token
+  end
+end
+
+PinchLineup::Application.config.secret_key_base = secure_token
